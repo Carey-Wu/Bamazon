@@ -22,7 +22,6 @@ var connection = mysql.createConnection({
 // Connection to the database.  All functions and user input are executed within this connection function to allow references back to database data.
 connection.connect(function (err) {
     if (err) throw err;
-    // console.log("connected as id " + connection.threadId);
     showItems();
 });
 
@@ -62,9 +61,14 @@ function showItems() {
                     }
                 ])
                 .then(function (inquirerResponse) {
+
                     // IF ELSE functions for actions based on user responses.  IF statement passes the parameter if the user requested quantity is less than the stock quantity, purchase occurs and updates database quantities
                     if ((inquirerResponse.purchase_quantity) <= (res[inquirerResponse.item_id - 1].stock_quantity)) {
                         console.log("Your order has been placed...\n");
+
+                        // Displays the total order price based on the price of the specific item and the quanitity ordered
+                        console.log("Your total purchase comes to: $" + (res[inquirerResponse.item_id -1].price * inquirerResponse.purchase_quantity));
+
                         // Query that updates values in the database based on user inputs
                         var query = connection.query(
                             "UPDATE products SET ? WHERE ?",
@@ -77,6 +81,7 @@ function showItems() {
                                 }
                             ],
                             function (err, res) {
+
                                 // Inquirer function to see if they're still looking to shop more.  If true are it runs the whichItem function again.  If false, it ends the connection to the database.
                                 inquirer.prompt([
                                     {
