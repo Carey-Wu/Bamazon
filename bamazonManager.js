@@ -53,7 +53,7 @@ function managerOptions() {
                     break;
 
                 case "Add New Product":
-                    songSearch();
+                    addNewItem();
                     break;
 
                 case "No Action Necessary":
@@ -192,77 +192,96 @@ function addInventory() {
     })
 }
 
-function postItem (){
+function addNewItem() {
     inquirer
-       .prompt([
-           {
-               type: "input",
-               message: "What is the item?",
-               name: "item_name"
-           },
+        .prompt([
+            {
+                type: "input",
+                message: "What is the item?",
+                name: "product_name"
+            },
 
-           {
-               type: "checkbox",
-               name: "item_functional_purpose",
-               message: "What is the item for?",
-               choices: ["Entertainment", "Work", "Food/Drink", "Travel", "School"]
-               
-           },
-           {
-               type: "input",
-               message: "What is your asking price?",
-               name: "asking_price"
-           },
-           {
-               type: "confirm",
-               message: "Is everything entered correctly?",
-               name: "confirmation",
-               default: true
-           }
+            {
+                type: "input",
+                message: "What department does it fall under?",
+                name: "department_name"
+            },
+            {
+                type: "input",
+                message: "What is the price?",
+                name: "price"
+            },
+            {
+                type: "input",
+                message: "How many are you adding to stock?",
+                name: "stock_quantity"
+            },
+            {
+                type: "confirm",
+                message: "Is everything entered correctly?",
+                name: "confirmation",
+                default: true
+            }
 
-       ])
-       .then(function(inquirerResponse){
-           if(inquirerResponse.confirmation) {
-               function createItem() {
-                   console.log("Inserting a new item...\n");
-                   var query = connection.query(
-                     "INSERT INTO posted_items SET ?",
-                     {
-                       item_name: inquirerResponse.item_name ,
-                       item_functional_purpose: inquirerResponse.item_functional_purpose,
-                       asking_price: inquirerResponse.asking_price
-                     },
-                     function(err, res) {
-                       console.log(res.affectedRows + " item inserted!\n");
-                     }
-                   );
-                   console.log(query.sql);
-                 }
-              createItem(); 
-              addMore();                    
-           }
-           else {
-               postItem();
-           }
-       })
-} 
+        ])
+        .then(function (inquirerResponse) {
+            if (inquirerResponse.confirmation) {
+                function createItem() {
+                    console.log("Inserting new item into inventory...\n");
+                    var query = connection.query(
+                        "INSERT INTO products SET ?",
+                        {
+                            product_name: inquirerResponse.product_name,
+                            department_name: inquirerResponse.department_name,
+                            price: inquirerResponse.price,
+                            stock_quantity: inquirerResponse.stock_quantity
+                        },
+                    );
+                }
+                createItem();
+                addMore();
+            }
+            else {
+                addNewItem();
+            }
+        })
+}
 
-function addMore () {
-   inquirer.prompt([
-       {
-           type: "confirm",
-           message: "Do you have other items to list?",
-           name: "confirmation",
-           default: true
-       }
-   
-   ]).then(function (inquirerResponse) {
-       if (inquirerResponse.confirmation) {
-           postItem();
-       }
-       else {
-           return console.log("All done entering items!")
-       }
-   })
+function addMore() {
+    inquirer.prompt([
+        {
+            type: "confirm",
+            message: "Do you have other items to add?",
+            name: "confirmation",
+            default: true
+        }
+
+    ]).then(function (inquirerResponse) {
+        if (inquirerResponse.confirmation) {
+            addNewItem();
+        }
+        else {
+            console.log("All done entering items!")
+            function question() {
+                inquirer.prompt([
+                    {
+                        type: "confirm",
+                        message: "Do you have more to do?",
+                        name: "confirmation",
+                        default: true
+                    }
+                ]).then(function (inquirerResponse) {
+                    if (inquirerResponse.confirmation) {
+                        managerOptions();
+                    }
+                    else {
+                        console.log("All done!")
+                        connection.end();
+                    }
+                })
+            }
+            question();
+        }
+    })
 }
 
