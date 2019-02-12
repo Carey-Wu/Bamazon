@@ -166,7 +166,13 @@ function addInventory() {
                     {
                         type: "input",
                         message: "How many units would you like to add?",
-                        name: "add_quantity"
+                        name: "add_quantity",
+                        validate: function(value) {
+                            if (isNaN(value) === false) {
+                                return true;
+                            }
+                            return false;
+                        }
                     }
                 ])
                 .then(function (inquirerResponse) {
@@ -209,12 +215,24 @@ function addNewItem() {
             {
                 type: "input",
                 message: "What is the price?",
-                name: "price"
+                name: "price",
+                validate: function(value) {
+                    if (isNaN(value) === false) {
+                        return true;
+                    }
+                    return false;
+                }
             },
             {
                 type: "input",
                 message: "How many are you adding to stock?",
-                name: "stock_quantity"
+                name: "stock_quantity",
+                validate: function(value) {
+                    if (isNaN(value) === false) {
+                        return true;
+                    }
+                    return false;
+                }
             },
             {
                 type: "confirm",
