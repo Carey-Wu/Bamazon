@@ -92,7 +92,7 @@ function showItems() {
                                     }
                                 ]).then(function (inquirerResponse) {
                                     if (inquirerResponse.confirmation) {
-                                        whichItem();
+                                        showItems();
                                     }
                                     else {
                                         console.log("All done shopping!")
